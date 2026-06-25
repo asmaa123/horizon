@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise RAG System Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(17, 24, 39, 0.6);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary-grad: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+            --accent-glow: rgba(129, 140, 248, 0.15);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-cyan: #38bdf8;
+            --accent-purple: #c084fc;
+            --success-color: #34d399;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(192, 132, 252, 0.08) 0%, transparent 40%);
+        }
+
+        header {
+            width: 100%;
+            max-width: 900px;
+            padding: 40px 20px 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-grad);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--primary-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            color: var(--success-color);
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success-color);
+        }
+
+        main {
+            width: 100%;
+            max-width: 900px;
+            padding: 0 20px 60px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .search-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-grad);
+        }
+
+        .search-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: rgba(31, 41, 55, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 16px;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 15px var(--accent-glow);
+            background: rgba(31, 41, 55, 0.8);
+        }
+
+        button {
+            background: var(--primary-grad);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0 28px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(129, 140, 248, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(129, 140, 248, 0.5);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Results section */
+        .results-container {
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .answer-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .answer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .answer-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .time-badge {
+            font-size: 13px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .answer-content {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #e5e7eb;
+            white-space: pre-line;
+        }
+
+        /* Source cards */
+        .sources-section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 10px;
+        }
+
+        .sources-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .source-card {
+            background: rgba(17, 24, 39, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .source-card:hover {
+            border-color: rgba(129, 140, 248, 0.4);
+            background: rgba(17, 24, 39, 0.6);
+            transform: scale(1.01);
+        }
+
+        .source-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .source-location {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--accent-purple);
+            background: rgba(192, 132, 252, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .source-score {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--success-color);
+            background: rgba(52, 211, 153, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .source-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            white-space: pre-wrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .source-card.expanded .source-text {
+            display: block;
+            -webkit-line-clamp: initial;
+            color: #d1d5db;
+        }
+
+        /* Loading indicator */
+        .loading-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #818cf8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 15px;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Suggestions */
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .suggestion-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-chip:hover {
+            background: rgba(129, 140, 248, 0.1);
+            border-color: rgba(129, 140, 248, 0.3);
+            color: var(--text-main);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3);
+            border-top: 1px solid var(--border-color);
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-section">
+            <div class="logo-icon">R</div>
+            <div>
+                <h1>Horizon RAG</h1>
+                <div style="font-size: 11px; color: var(--text-muted);">Enterprise Document QA</div>
+            </div>
+        </div>
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            System Online (Local Embedder)
+        </div>
+    </header>
+
+    <main>
+        <section class="search-card">
+            <div class="search-label">Ask the Document Base</div>
+            <div class="input-group">
+                <input type="text" id="query-input" placeholder="Type your question about Horizon Tours..." autofocus>
+                <button id="ask-btn">
+                    <span>Ask RAG</span>
+                </button>
+            </div>
+            
+            <div class="suggestions">
+                <div class="suggestion-chip">What is the price of the Cairo package?</div>
+                <div class="suggestion-chip">What is the cancellation policy?</div>
+                <div class="suggestion-chip">What classes are offered by airlines?</div>
+            </div>
+        </section>
+
+        <!-- Loading spinner -->
+        <section class="loading-container" id="loading">
+            <div class="spinner"></div>
+            <div class="loading-text" id="loading-message">Embedding query & retrieving relevant contexts...</div>
+        </section>
+
+        <!-- Output results -->
+        <section class="results-container" id="results">
+            <div class="answer-card">
+                <div class="answer-header">
+                    <div class="answer-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        Generated Answer
+                    </div>
+                    <div class="time-badge" id="time-badge">Retrieval: 0.000s</div>
+                </div>
+                <div class="answer-content" id="answer-content">
+                    Answer will appear here.
+                </div>
+            </div>
+
+            <div class="sources-section-title">Retrieved Contexts & Sources</div>
+            
+            <div class="sources-grid" id="sources-grid">
+                <!-- Source cards rendered here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        Horizon Tours Knowledge Base System • Powered by FAISS & Sentence-Transformers (Offline Mode)
+    </footer>
+
+    <script>
+        const queryInput = document.getElementById('query-input');
+        const askBtn = document.getElementById('ask-btn');
+        const loadingSection = document.getElementById('loading');
+        const loadingMessage = document.getElementById('loading-message');
+        const resultsSection = document.getElementById('results');
+        const answerContent = document.getElementById('answer-content');
+        const timeBadge = document.getElementById('time-badge');
+        const sourcesGrid = document.getElementById('sources-grid');
+        const chips = document.querySelectorAll('.suggestion-chip');
+
+        // Suggestion chips handler
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                queryInput.value = chip.textContent;
+                submitQuery();
+            });
+        });
+
+        // Search trigger
+        askBtn.addEventListener('click', submitQuery);
+        queryInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitQuery();
+            }
+        });
+
+        function showLoading(show, message = "Retrieving relevant contexts...") {
+            if (show) {
+                loadingMessage.textContent = message;
+                loadingSection.style.display = 'flex';
+                resultsSection.style.display = 'none';
+            } else {
+                loadingSection.style.display = 'none';
+            }
+        }
+
+        async function submitQuery() {
+            const query = queryInput.value.trim();
+            if (!query) return;
+
+            showLoading(true, "Embedding query, loading FAISS vector index, and cross-encoder reranking...");
+
+            try {
+                const response = await fetch(`/api/query?q=${encodeURIComponent(query)}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                
+                showLoading(false);
+                renderResults(data);
+            } catch (error) {
+                console.error("Query failed:", error);
+                showLoading(false);
+                alert("Query failed. Please make sure the Python server is running.");
+            }
+        }
+
+        function renderResults(data) {
+            // Render Answer
+            answerContent.textContent = data.answer;
+            timeBadge.textContent = `Retrieval: ${data.retrieval_time.toFixed(3)}s`;
+
+            // Clear old sources
+            sourcesGrid.innerHTML = '';
+
+            // Render Sources
+            if (data.sources && data.sources.length > 0) {
+                data.sources.forEach((source, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'source-card';
+                    
+                    // Toggle expanded snippet details
+                    card.addEventListener('click', () => {
+                        card.classList.toggle('expanded');
+                    });
+
+                    card.innerHTML = `
+                        <div class="source-meta">
+                            <div class="source-location">
+                                Source ${index + 1}: Page ${source.page} - ${source.section}
+                            </div>
+                            <div class="source-score">
+                                Match Score: ${source.score.toFixed(4)}
+                            </div>
+                        </div>
+                        <div class="source-text">${source.content}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; text-align: right; font-style: italic;">
+                            Click card to toggle complete text snippet
+                        </div>
+                    `;
+                    sourcesGrid.appendChild(card);
+                });
+            } else {
+                sourcesGrid.innerHTML = '<div style="color: var(--text-muted); padding: 20px; text-align: center;">No sources retrieved.</div>';
+            }
+
+            // Display results
+            resultsSection.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
